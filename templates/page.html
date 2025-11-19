@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+<!-- This is actually the game page template, but since all pages are game pages... -->
+
+{% block title %}{{page.title}}{% endblock title %}
+
+{% block content %}
+
+  <div class="game-page-top">
+    <h2 class="game-page-title">{{page.title}}</h2>
+    <h3 class="game-page-team">{{page.extra.team}}</h2>
+  </div>
+
+  <div class="game-page-content">
+    <!-- Iframe (with potentially a custom height). The iframe container ratio needs to match the iframe ratio. -->
+    <div id="game-page-iframe-container"
+
+      {% if page.extra.iframe_container_height %}
+        style="height: {{page.extra.iframe_container_height}}px;"
+      {% endif %}>
+
+      <iframe id="game-page-iframe" src="{{page.permalink}}/iframe.html"
+        {% if page.extra.iframe_container_height %}
+          style="height: {{1280 * page.extra.iframe_container_height / 904 }}px;"
+        {% endif %}
+      ></iframe></div>
+    <div id="popup-button-container">
+      <button id="popup-button" onClick="popup()">Open Game in Popup Window</button>
+    </div>
+    <div id="game-instructions">
+      {{ page.content  | safe }}
+    </div>
+  </div>
+
+  <!-- Game Popup Button -->
+  <!-- Opens up the game (as long as the game path is in iframe.html relative to the game directory) -->
+  <script>
+      function popup() { 
+          var params = ['height='+screen.height, 'width='+screen.width, 'fullscreen=yes' ].join(',');
+          var newWindow = window.open("iframe.html", "Game", params); 
+          newWindow.moveTo(0,0) 
+      }
+  </script>
+
+
+
+{% endblock content %}

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Dr Ecco - {% block title %}{% endblock title %}</title>
+  <link rel="stylesheet" href={{ get_url(path="styles.css") }}>
+</head>
+
+<body>
+
+  <header>
+    <div class="center">
+        <a href="{{config.base_url}}" id="banner-link">
+            <img id="banner" src={{ get_url(path="banner.png") }} alt="Dr Ecco banner">
+        </a>
+    </div>
+  </header>
+
+
+  <section id="content">
+    {% block content %} {% endblock %}
+  </section>
+
+  <footer>
+    <div class="center">
+      Heuristic Problem Solving @ NYU (2025) ∎
+    </div>
+  </footer>
+
+</body>
+
+</html>

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock title %}
+
+{% block content %}
+    <div id="welcome-message">
+
+      <img src="detail.jpg" id="detail-image">
+
+      <div>
+
+        <b>Welcome</b> to the <span class="dr-ecco-omniheurist">Dr Ecco Omniheurist</span> games
+        website! This website contains competitive puzzles and games for your
+        mathematical/logical pleasure. All games were built by students in the
+        class <i>Heuristic Problem Solving</i> at NYU.
+
+      </div>
+
+    </div>
+
+    {% for game_section_path in section.subsections %}
+      {% set game_section = get_section(path=game_section_path) %}
+      {% for year_subsection_path in game_section.subsections | reverse %}
+        {% set year_subsection = get_section(path=year_subsection_path) %}
+        <h3 class="game-year-subsection-title">{{year_subsection.title}}</h3>
+        <div class="games-container">
+        {% for page in year_subsection.pages %}
+          <a href="{{ page.permalink }}" class="game-card-anchor">
+            <div class="game-card">
+              <img class="game-card-image" src="{{page.permalink}}/{{page.extra.thumbnail}}" alt="thumbnail">
+              <div class="game-card-label">
+                <h4 class="game-card-title">{{ page.title }}</h3>
+                <h5 class="game-card-team">{{ page.extra.team }}</h4>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+        </div>
+      {% endfor %}
+    {% endfor %}
+
+{% endblock content %}
