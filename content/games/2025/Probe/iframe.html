@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="main.css" />
+  <script src="main.js" defer></script>
+  <title>Probe — Sub Hunt</title>
+</head>
+<body>
+  <div id="root">
+    <div class="topbar">
+      <div class="controls">
+        <button id="placeProbeBtn">Place probe</button>
+        <div class="move-buttons">
+          <button data-dir="N">N</button>
+          <div>
+            <button data-dir="W">W</button>
+            <button data-dir="E">E</button>
+          </div>
+          <button data-dir="S">S</button>
+        </div>
+        <div class="radius-control">
+          <label>Manual radius: <span id="manualRadiusLabel">auto</span></label>
+          <input id="manualRadius" type="range" min="0" max="50" value="0" />
+          <button id="resetRadius">Auto</button>
+        </div>
+        <button id="newGame">New Game</button>
+      </div>
+      <div class="status">
+        <div>Turns: <span id="turnCount">0</span></div>
+        <div>Radius: <span id="effectiveRadius">0</span></div>
+        <div>Detection: <span id="detectionMsg">none</span></div>
+        <div>Timer: <span id="timer">0.00s</span></div>
+      </div>
+    </div>
+
+    <div class="canvas-container">
+      <canvas id="gameCanvas" width="800" height="800"></canvas>
+    </div>
+
+    <div class="sidebar">
+      <div class="settings">
+        <label>Grid size:
+          <select id="gridSizeSelect">
+            <option value="100">100 × 100</option>
+            <option value="200" selected>200 × 200</option>
+            <option value="500">500 × 500</option>
+            <option value="1000">1000 × 1000</option>
+          </select>
+        </label>
+        <label>Sub moves every:
+          <input id="moveSubEvery" type="number" min="0" value="3" />
+        </label>
+        <label>Radius increase every turns:
+          <input id="radiusIncreaseEvery" type="number" min="1" value="50" />
+        </label>
+        <label>Win distance:
+          <input id="winDistance" type="number" min="1" value="2" />
+        </label>
+      </div>
+      <div class="leaderboard">
+        <h3>Leaderboard (local)</h3>
+        <ol id="leaderboardList"></ol>
+      </div>
+    </div>
+  </div>
+
+  <div id="instructionsModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="instrTitle">
+    <div class="modal-panel">
+      <h2 id="instrTitle">How to play — Probe</h2>
+      <div class="instr-body">
+        <p>You are searching for a hidden submarine on a square grid. Place your probe and move it one cell per turn (use arrow keys or the on-screen buttons).</p>
+        <p>On each turn the probe scans a circular area around itself. If the submarine is inside that scan radius you will be notified and given a vague compass direction (N, NE, E, ...).</p>
+        <p>When you receive a detection you can reduce the probe radius (use the Manual radius slider) to pinpoint the submarine. You win when your probe is within the <strong>win distance</strong> of the submarine.</p>
+        <hr />
+        <div class="instr-settings">
+          <div class="instr-row">
+            <label>Grid size</label>
+            <select id="instr_gridSize">
+              <option value="100">100 × 100</option>
+              <option value="200" selected>200 × 200</option>
+              <option value="500">500 × 500</option>
+              <option value="1000">1000 × 1000</option>
+            </select>
+            <div class="instr-help">How big the world is. Larger values make the map zoom out; keep 200 for best clarity.</div>
+          </div>
+
+          <div class="instr-row">
+            <label>Radius increase every turns</label>
+            <input id="instr_radiusIncreaseEvery" type="number" min="1" value="50" />
+            <div class="instr-help">How many turns before the probe's automatic scan radius increases by 1. Higher slows automatic expansion.</div>
+          </div>
+
+          <div class="instr-row">
+            <label>Sub moves every</label>
+            <input id="instr_moveSubEvery" type="number" min="0" value="3" />
+            <div class="instr-help">How often (in turns) the submarine moves. 0 disables movement.</div>
+          </div>
+
+          <div class="instr-row">
+            <label>Win distance</label>
+            <input id="instr_winDistance" type="number" min="1" value="2" />
+            <div class="instr-help">How close the probe must be to win (measured in grid cells).</div>
+          </div>
+
+          <div class="instr-row">
+            <label>Start mode</label>
+            <select id="instr_startMode">
+              <option value="place">Click to place probe</option>
+              <option value="center">Start at center</option>
+            </select>
+            <div class="instr-help">Choose whether you will click to place the probe or start at center immediately.</div>
+          </div>
+        </div>
+        <div class="instr-actions">
+          <button id="instrStartBtn">Start Game</button>
+          <button id="instrCancelBtn">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
+
