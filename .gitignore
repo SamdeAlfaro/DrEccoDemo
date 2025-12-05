@@ -4,10 +4,7 @@ content/games/*
 !content/games/2025
 !_index.md
 
-content/games/2025/*
 !content/games/2025/_index.md
-!content/games/2025/Gomoku
-!content/games/2025/Gomoku/*
 
 public
 public.zip
