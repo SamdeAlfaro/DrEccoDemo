@@ -1,6 +1,6 @@
 let CELL_SIZE = 60; // Maybe edit later?
-let BOARD_COLS = 10;
-let BOARD_ROWS = 8;
+let BOARD_COLS = 16;
+let BOARD_ROWS = 12;
 let BOARD_OFFSET_X = 50;
 let BOARD_OFFSET_Y = 80;
 
@@ -16,10 +16,10 @@ const PLAYER_NAMES = ['Blue', 'Green', 'Orange', 'Red', 'Purple'];
 
 let gameState = 'setup';
 let numPlayers = 2;
-let waterSparsity = 0.3;
-let poisonSparsity = 0.15;
-let obstacleSparsity = 0.08;
-let maxDropWeight = 5;
+let waterSparsity = 0.18;
+let poisonSparsity = 0.22;
+let obstacleSparsity = 0.15;
+let maxDropWeight = 7;
 
 let board = [];
 let players = [];
@@ -119,9 +119,9 @@ function drawSetupScreen() {
   text('Water:', labelX, startY);
   
   let sparsityOptions = [
-    { label: 'Dense', value: 0.5 },
-    { label: 'Medium', value: 0.3 },
-    { label: 'Sparse', value: 0.15 }
+    { label: 'Dense', value: 0.28 },
+    { label: 'Medium', value: 0.18 },
+    { label: 'Sparse', value: 0.10 }
   ];
   
   for (let i = 0; i < sparsityOptions.length; i++) {
@@ -149,9 +149,9 @@ function drawSetupScreen() {
   
   let poisonOptions = [
     { label: 'None', value: 0 },
-    { label: 'Few', value: 0.1 },
-    { label: 'Many', value: 0.2 },
-    { label: 'Lots', value: 0.3 }
+    { label: 'Few', value: 0.12 },
+    { label: 'Many', value: 0.22 },
+    { label: 'Lots', value: 0.32 }
   ];
   
   for (let i = 0; i < poisonOptions.length; i++) {
@@ -179,9 +179,9 @@ function drawSetupScreen() {
   
   let obstacleOptions = [
     { label: 'None', value: 0 },
-    { label: 'Few', value: 0.05 },
-    { label: 'Some', value: 0.1 },
-    { label: 'Many', value: 0.15 }
+    { label: 'Few', value: 0.08 },
+    { label: 'Some', value: 0.15 },
+    { label: 'Many', value: 0.22 }
   ];
   
   for (let i = 0; i < obstacleOptions.length; i++) {
@@ -738,9 +738,9 @@ function initGame() {
       if (rand < obstacleSparsity) {
         board[row][col] = CELL_OBSTACLE;
       } else if (rand < obstacleSparsity + poisonSparsity) {
-        board[row][col] = -floor(random(1, 6));
+        board[row][col] = -floor(random(2, 8));
       } else if (rand < obstacleSparsity + poisonSparsity + waterSparsity) {
-        board[row][col] = floor(random(1, 8));
+        board[row][col] = floor(random(5, 18));
       } else {
         board[row][col] = 0;
       }
@@ -800,9 +800,9 @@ function handleSetupClick() {
   
   startY += spacing;
   let sparsityOptions = [
-    { label: 'Dense', value: 0.5 },
-    { label: 'Medium', value: 0.3 },
-    { label: 'Sparse', value: 0.15 }
+    { label: 'Dense', value: 0.28 },
+    { label: 'Medium', value: 0.18 },
+    { label: 'Sparse', value: 0.10 }
   ];
   
   for (let i = 0; i < sparsityOptions.length; i++) {
@@ -817,9 +817,9 @@ function handleSetupClick() {
   startY += spacing;
   let poisonOptions = [
     { label: 'None', value: 0 },
-    { label: 'Few', value: 0.1 },
-    { label: 'Many', value: 0.2 },
-    { label: 'Lots', value: 0.3 }
+    { label: 'Few', value: 0.12 },
+    { label: 'Many', value: 0.22 },
+    { label: 'Lots', value: 0.32 }
   ];
   
   for (let i = 0; i < poisonOptions.length; i++) {
@@ -834,9 +834,9 @@ function handleSetupClick() {
   startY += spacing;
   let obstacleOptions = [
     { label: 'None', value: 0 },
-    { label: 'Few', value: 0.05 },
-    { label: 'Some', value: 0.1 },
-    { label: 'Many', value: 0.15 }
+    { label: 'Few', value: 0.08 },
+    { label: 'Some', value: 0.15 },
+    { label: 'Many', value: 0.22 }
   ];
   
   for (let i = 0; i < obstacleOptions.length; i++) {
@@ -945,6 +945,10 @@ function keyPressed() {
       selectedColumn = 10;
     } else if (key === '=' || key === '+') {
       selectedColumn = 11;
+    } else if (key === '[' || key === '{') {
+      selectedColumn = 12;
+    } else if (key === ']' || key === '}') {
+      selectedColumn = 13;
     } else if (keyCode === ENTER && selectedColumn >= 0) {
       dropRaindrop();
     }

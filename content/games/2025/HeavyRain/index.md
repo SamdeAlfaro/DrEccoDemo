@@ -8,6 +8,17 @@ thumbnail="thumbnail.png"
 
 # Rules
 
-The goal of Heavy Rain is to score points by dropping raindrops onto a grid-based board that contains cells with water, poison, or obstacles. Water cells increase your score when a raindrop lands on them, while poison cells subtract points. Obstacles block movement, forcing players to plan their drops strategically. Each player has a limited set of raindrops of varying weights, and the game ends when all raindrops have been used. The player with the highest total score at the end wins.
+Heavy Rain is a strategic multiplayer game where players drop weighted raindrops down a grid to collect water and avoid poison.
 
-On each turn, a player selects a column to drop a raindrop. The raindrop falls downward, moving straight unless it encounters a situation with multiple possible paths. In that case, the drop favors the path with the most water, choosing diagonals only when it increases its score. The weight of the drop affects its interaction with the board, as heavier drops can push through or alter some cells more than lighter drops.
+**Setup:** Each player receives raindrops weighted 1 through 7 (one of each weight). The board contains water droplets (5-17 points), poison droplets (-2 to -7 points), and obstacles that block movement.
+
+**Gameplay:** On your turn, select one of your available weights and choose a column to drop it into. Your raindrop falls downward and automatically collects any water or poison it passes through, which changes both your score and the drop's effective weight mid-fall.
+
+**Movement Rules:** At each step, the raindrop can move straight down, down-left, or down-right (obstacles block movement). The raindrop follows these priority rules:
+
+1. **Follow the water:** Move to whichever adjacent cell below has the highest water value
+2. **Break ties with straight down:** If multiple cells have equally high water, choose straight down if it's one of them
+3. **Otherwise pick a diagonal:** If straight down doesn't have the highest water but both diagonals are tied, pick either diagonal
+4. **Lightweight exception:** If your drop's current weight is less than the water in both diagonals, prioritize straight down instead
+
+**Winning:** The game ends when all players have used all their raindrops. The player with the highest score wins.
