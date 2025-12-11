@@ -5,15 +5,16 @@ team = "Vinayak"
 thumbnail = "thumbnail.png"
 +++
 
-Play against the computer to find a hidden submarine on a large grid.
+The year is 1967 and The Beatles have gone missing! They're hiding in a yellow submarine somewhere on the grid.
 
 Rules:
-- Click to place your probe anywhere for your starting position.
-- Move the probe one cell per turn using arrow keys or the on-screen buttons.
-- The probe initially scans in a radius of 5 units; the automatic scan radius increases by 1 every 5 turns.
-- If the submarine falls within your scan radius you are notified and given a vague compass direction.
-- You can manually reduce the scan radius (use the slider) to help pinpoint the submarine.
-- The computer may move the submarine occasionally to make the search harder.
-- You win when you are within 2 units of the submarine.
 
-Try to find the submarine as fast as possible — your time is recorded on the local leaderboard.
+- Move your probe using arrow keys (Player 1) or WASD keys (Player 2).
+- Every 5 seconds, one of The Beatles will peek out to give you a hint about their location.
+- The probe scans in a radius that increases over time.
+- When you detect the submarine, you'll get a compass direction hint.
+- You can manually adjust the scan radius (use the slider) to narrow your search.
+- The submarine moves every 5 seconds to a new location, and The Beatles peek out again!
+- You win when you get within 2 units of the yellow submarine.
+
+Find The Beatles as fast as possible — your time is recorded on the local leaderboard!

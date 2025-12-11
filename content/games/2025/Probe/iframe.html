@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -7,6 +8,7 @@
   <script src="main.js" defer></script>
   <title>Probe — Sub Hunt</title>
 </head>
+
 <body>
   <div id="root">
     <div class="topbar">
@@ -49,8 +51,8 @@
             <option value="1000">1000 × 1000</option>
           </select>
         </label>
-        <label>Sub moves every:
-          <input id="moveSubEvery" type="number" min="0" value="3" />
+        <label>Beatles peek every (seconds):
+          <input id="moveSubEvery" type="number" min="3" value="5" />
         </label>
         <label>Radius increase every turns:
           <input id="radiusIncreaseEvery" type="number" min="1" value="50" />
@@ -68,11 +70,15 @@
 
   <div id="instructionsModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="instrTitle">
     <div class="modal-panel">
-      <h2 id="instrTitle">How to play — Probe</h2>
+      <h2 id="instrTitle">How to play — Find The Beatles</h2>
       <div class="instr-body">
-        <p>You are searching for a hidden submarine on a square grid. Place your probe and move it one cell per turn (use arrow keys or the on-screen buttons).</p>
-        <p>On each turn the probe scans a circular area around itself. If the submarine is inside that scan radius you will be notified and given a vague compass direction (N, NE, E, ...).</p>
-        <p>When you receive a detection you can reduce the probe radius (use the Manual radius slider) to pinpoint the submarine. You win when your probe is within the <strong>win distance</strong> of the submarine.</p>
+        <p>It's 1967 and The Beatles have disappeared into a yellow submarine! Use your probe to search the grid and
+          find them.</p>
+        <p>Every 5 seconds, one of The Beatles will peek out briefly, giving you a clue to their location. Your probe
+          scans in a circular radius — if the submarine is detected, you'll get a compass direction hint (N, NE, E,
+          ...).</p>
+        <p>Use arrow keys (Player 1) or WASD (Player 2) to move. Adjust the scan radius with the slider to narrow your
+          search. Find them within the <strong>win distance</strong> to complete your mission!</p>
         <hr />
         <div class="instr-settings">
           <div class="instr-row">
@@ -83,19 +89,21 @@
               <option value="500">500 × 500</option>
               <option value="1000">1000 × 1000</option>
             </select>
-            <div class="instr-help">How big the world is. Larger values make the map zoom out; keep 200 for best clarity.</div>
+            <div class="instr-help">How big the world is. Larger values make the map zoom out; keep 200 for best
+              clarity.</div>
           </div>
 
           <div class="instr-row">
             <label>Radius increase every turns</label>
             <input id="instr_radiusIncreaseEvery" type="number" min="1" value="50" />
-            <div class="instr-help">How many turns before the probe's automatic scan radius increases by 1. Higher slows automatic expansion.</div>
+            <div class="instr-help">How many turns before the probe's automatic scan radius increases by 1. Higher slows
+              automatic expansion.</div>
           </div>
 
           <div class="instr-row">
-            <label>Sub moves every</label>
-            <input id="instr_moveSubEvery" type="number" min="0" value="3" />
-            <div class="instr-help">How often (in turns) the submarine moves. 0 disables movement.</div>
+            <label>Beatles peek interval (seconds)</label>
+            <input id="instr_moveSubEvery" type="number" min="3" value="5" />
+            <div class="instr-help">How often (in seconds) The Beatles move and peek out. Minimum 3 seconds.</div>
           </div>
 
           <div class="instr-row">
@@ -105,12 +113,14 @@
           </div>
 
           <div class="instr-row">
-            <label>Start mode</label>
-            <select id="instr_startMode">
-              <option value="place">Click to place probe</option>
-              <option value="center">Start at center</option>
+            <label>Number of players</label>
+            <select id="instr_numPlayers">
+              <option value="1" selected>1 Player</option>
+              <option value="2">2 Players</option>
             </select>
-            <div class="instr-help">Choose whether you will click to place the probe or start at center immediately.</div>
+            <div class="instr-help">Choose single player mode or 2-player competitive mode. Probes start at center
+              automatically.
+            </div>
           </div>
         </div>
         <div class="instr-actions">
@@ -122,5 +132,5 @@
   </div>
 
 </body>
-</html>
 
+</html>
