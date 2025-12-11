@@ -11,6 +11,9 @@ let turnCount = 0;
 let subMoveCount = 0;
 let autoRadiusBase = 5;
 let radiusIncreaseEvery = 50;
+let keysPressed = {};
+let lastMoveTime = { 1: 0, 2: 0 };
+let moveDelay = 50; // Milliseconds between moves (faster)
 let manualRadius = 0;
 let moveSubEvery = 5; // Now in seconds
 let winDistance = 2;
@@ -76,17 +79,26 @@ function showBeatlesPeek() {
 
 function startSubMovementTimer() {
   if (subMoveTimerId) clearInterval(subMoveTimerId);
-  if (moveSubEvery <= 0) return;
 
   // Show initial peek
   showBeatlesPeek();
 
-  // Set up recurring movement and peek
-  subMoveTimerId = setInterval(() => {
+  // Dynamic function to schedule next move based on current phase
+  function scheduleNextMove() {
     if (!started) return;
-    moveSub();
-    showBeatlesPeek();
-  }, moveSubEvery * 1000);
+
+    // First 10 moves: 3 seconds (hard phase)
+    // After 10 moves: 5 seconds (easier phase)
+    let interval = subMoveCount < 10 ? 3000 : 5000;
+
+    subMoveTimerId = setTimeout(() => {
+      moveSub();
+      showBeatlesPeek();
+      scheduleNextMove(); // Schedule next move
+    }, interval);
+  }
+
+  scheduleNextMove();
 }
 
 function stopSubMovementTimer() {
@@ -358,8 +370,8 @@ function moveProbe(dir, player = 1) {
 function moveSub() {
   subMoveCount++;
 
-  // For the first 3 moves, place submarine far from all probes
-  if (subMoveCount <= 3) {
+  // For the first 10 moves: hard phase - place submarine far from all probes
+  if (subMoveCount <= 10) {
     let bestPos = null;
     let maxMinDist = 0;
 
@@ -388,9 +400,8 @@ function moveSub() {
       sub.y = bestPos.y;
     }
   } else {
-    // After first 3 moves, jump to a random location within a larger radius
-    // This makes it harder to track - not just adjacent cells
-    let jumpRadius = Math.floor(GRID_SIZE / 8); // Jump up to 12.5% of grid size
+    // After 10 moves: easier phase - smaller random jumps
+    let jumpRadius = Math.floor(GRID_SIZE * 0.3); // Jump up to 30% of grid size
     let dx = randInt(-jumpRadius, jumpRadius);
     let dy = randInt(-jumpRadius, jumpRadius);
     sub.x = clamp(sub.x + dx, 0, GRID_SIZE - 1);
@@ -647,45 +658,98 @@ function init() {
   window._initCalled = true;
   window.addEventListener("resize", () => render());
   // Click handler removed - probes now placed automatically at game start
+  // Track key state for smooth simultaneous two-player movement
   window.addEventListener("keydown", function (e) {
     if (!started) return;
+    keysPressed[e.key] = true;
 
-    // Player 1 - Arrow keys
-    if (e.key === "ArrowUp") {
-      moveProbe("N", 1);
-      e.preventDefault();
-    }
-    if (e.key === "ArrowDown") {
-      moveProbe("S", 1);
-      e.preventDefault();
-    }
-    if (e.key === "ArrowLeft") {
-      moveProbe("W", 1);
-      e.preventDefault();
-    }
-    if (e.key === "ArrowRight") {
-      moveProbe("E", 1);
-      e.preventDefault();
-    }
-
-    // Player 2 - WASD keys
-    if (e.key === "w" || e.key === "W") {
-      moveProbe("N", 2);
-      e.preventDefault();
-    }
-    if (e.key === "s" || e.key === "S") {
-      moveProbe("S", 2);
-      e.preventDefault();
-    }
-    if (e.key === "a" || e.key === "A") {
-      moveProbe("W", 2);
-      e.preventDefault();
-    }
-    if (e.key === "d" || e.key === "D") {
-      moveProbe("E", 2);
+    // Prevent default for game control keys
+    if (
+      [
+        "ArrowUp",
+        "ArrowDown",
+        "ArrowLeft",
+        "ArrowRight",
+        "w",
+        "W",
+        "a",
+        "A",
+        "s",
+        "S",
+        "d",
+        "D",
+      ].includes(e.key)
+    ) {
       e.preventDefault();
     }
   });
+
+  window.addEventListener("keyup", function (e) {
+    keysPressed[e.key] = false;
+  });
+
+  // Game loop to process held keys for both players simultaneously
+  function gameLoop() {
+    if (!started) {
+      requestAnimationFrame(gameLoop);
+      return;
+    }
+
+    let now = performance.now();
+    let moved = false;
+
+    // Player 1 - Arrow keys
+    if (now - lastMoveTime[1] >= moveDelay) {
+      if (keysPressed["ArrowUp"]) {
+        moveProbe("N", 1);
+        lastMoveTime[1] = now;
+        moved = true;
+      } else if (keysPressed["ArrowDown"]) {
+        moveProbe("S", 1);
+        lastMoveTime[1] = now;
+        moved = true;
+      } else if (keysPressed["ArrowLeft"]) {
+        moveProbe("W", 1);
+        lastMoveTime[1] = now;
+        moved = true;
+      } else if (keysPressed["ArrowRight"]) {
+        moveProbe("E", 1);
+        lastMoveTime[1] = now;
+        moved = true;
+      }
+    }
+
+    // Player 2 - WASD keys (can move simultaneously with Player 1)
+    if (numPlayers === 2 && now - lastMoveTime[2] >= moveDelay) {
+      if (keysPressed["w"] || keysPressed["W"]) {
+        moveProbe("N", 2);
+        lastMoveTime[2] = now;
+        moved = true;
+      } else if (keysPressed["s"] || keysPressed["S"]) {
+        moveProbe("S", 2);
+        lastMoveTime[2] = now;
+        moved = true;
+      } else if (keysPressed["a"] || keysPressed["A"]) {
+        moveProbe("W", 2);
+        lastMoveTime[2] = now;
+        moved = true;
+      } else if (keysPressed["d"] || keysPressed["D"]) {
+        moveProbe("E", 2);
+        lastMoveTime[2] = now;
+        moved = true;
+      }
+    }
+
+    // Only render once if either player moved
+    if (moved) {
+      // Render is already called in moveProbe, but we could optimize here
+    }
+
+    requestAnimationFrame(gameLoop);
+  }
+
+  // Start the game loop
+  gameLoop();
   qs("placeProbeBtn").addEventListener("click", function () {
     if (started) return; // Don't reposition if game already started
     computeSizes();
