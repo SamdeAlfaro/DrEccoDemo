@@ -1,5 +1,5 @@
 let CELL_SIZE = 60; // Maybe edit later?
-let BOARD_COLS = 16;
+let BOARD_COLS = 14;
 let BOARD_ROWS = 12;
 let BOARD_OFFSET_X = 50;
 let BOARD_OFFSET_Y = 80;
@@ -83,7 +83,7 @@ function drawSetupScreen() {
   
   textSize(20);
   fill(200);
-  text('Configure your game settings', width / 2, 110);
+  text('Drop raindrops to collect water and reach the bottom', width / 2, 110);
   
   let startY = 200;
   let spacing = 50;
@@ -145,7 +145,7 @@ function drawSetupScreen() {
   fill(255);
   textSize(20);
   textAlign(LEFT, CENTER);
-  text('Poison:', labelX, startY);
+  text('Fire:', labelX, startY);
   
   let poisonOptions = [
     { label: 'None', value: 0 },
@@ -159,7 +159,7 @@ function drawSetupScreen() {
     let btnY = startY - 15;
     let isSelected = poisonSparsity === poisonOptions[i].value;
     
-    fill(isSelected ? '#E57373' : 60);
+    fill(isSelected ? '#FF6B35' : 60);
     stroke(isSelected ? 255 : 100);
     strokeWeight(2);
     rect(btnX, btnY, 60, 30, 5);
@@ -241,10 +241,10 @@ function drawSetupScreen() {
   
   textSize(20);
   fill(150);
-  text('Each player gets raindrops of weights 1 to k', width / 2, startBtnY + 100);
+  text('Collect water and reach the bottom to score your drop weight', width / 2, startBtnY + 100);
   
-  fill('#E57373');
-  text('Red = poison (subtract points)', width / 2, startBtnY + 130);
+  fill('#FF6B35');
+  text('Orange = fire (lose water weight)', width / 2, startBtnY + 130);
   
   fill('#78909C');
   text('Gray = obstacles (block path)', width / 2, startBtnY + 160);
@@ -302,7 +302,7 @@ function drawBoard() {
         
         if (cellValue !== 0) {
           let isPoison = cellValue < 0;
-          let dropColor = isPoison ? '#E57373' : '#64B5F6';
+          let dropColor = isPoison ? '#FF6B35' : '#64B5F6';
           drawWaterDrop(x + CELL_SIZE / 2, y + CELL_SIZE / 2, Math.abs(cellValue), dropColor, isPoison);
         }
       }
@@ -328,7 +328,7 @@ function drawBoard() {
   pop();
 }
 
-function drawWaterDrop(x, y, weight, baseColor, isPoison = false) {
+function drawWaterDrop(x, y, weight, baseColor, isFire = false) {
   push();
   
   let size = map(weight, 1, 20, 15, 35);
@@ -338,16 +338,24 @@ function drawWaterDrop(x, y, weight, baseColor, isPoison = false) {
   fill(c);
   noStroke();
   
-  if (isPoison) {
+  if (isFire) {
+    // Draw flame shape
     beginShape();
-    for (let a = 0; a < TWO_PI; a += TWO_PI / 6) {
-      let outerX = x + cos(a - HALF_PI) * size * 0.5;
-      let outerY = y + sin(a - HALF_PI) * size * 0.5;
-      vertex(outerX, outerY);
-      let innerX = x + cos(a - HALF_PI + TWO_PI / 12) * size * 0.25;
-      let innerY = y + sin(a - HALF_PI + TWO_PI / 12) * size * 0.25;
-      vertex(innerX, innerY);
-    }
+    vertex(x, y - size * 0.7);
+    bezierVertex(x + size * 0.4, y - size * 0.5, x + size * 0.5, y - size * 0.1, x + size * 0.3, y + size * 0.3);
+    bezierVertex(x + size * 0.2, y + size * 0.5, x, y + size * 0.6, x - size * 0.2, y + size * 0.5);
+    bezierVertex(x - size * 0.3, y + size * 0.3, x - size * 0.5, y - size * 0.1, x - size * 0.4, y - size * 0.5);
+    bezierVertex(x - size * 0.3, y - size * 0.6, x, y - size * 0.8, x, y - size * 0.7);
+    endShape(CLOSE);
+    
+    // Inner flame
+    fill(255, 200, 0, 150);
+    beginShape();
+    vertex(x, y - size * 0.5);
+    bezierVertex(x + size * 0.2, y - size * 0.3, x + size * 0.25, y, x + size * 0.15, y + size * 0.2);
+    bezierVertex(x + size * 0.1, y + size * 0.3, x, y + size * 0.35, x - size * 0.1, y + size * 0.3);
+    bezierVertex(x - size * 0.15, y + size * 0.2, x - size * 0.25, y, x - size * 0.2, y - size * 0.3);
+    bezierVertex(x - size * 0.15, y - size * 0.4, x, y - size * 0.6, x, y - size * 0.5);
     endShape(CLOSE);
   } else {
     beginShape();
@@ -360,11 +368,11 @@ function drawWaterDrop(x, y, weight, baseColor, isPoison = false) {
     ellipse(x - size * 0.15, y - size * 0.2, size * 0.2, size * 0.3);
   }
   
-  fill(isPoison ? 255 : 0);
+  fill(isFire ? 0 : 0);
   textAlign(CENTER, CENTER);
   textSize(constrain(size * 0.55, 9, 14)+5);
-  let displayText = isPoison ? '-' + weight : weight;
-  text(displayText, x, y + (isPoison ? 0 : size * 0.1));
+  let displayText = isFire ? '-' + weight : weight;
+  text(displayText, x, y + (isFire ? 0 : size * 0.1));
   
   pop();
 }
@@ -482,14 +490,14 @@ function drawFallingDrop() {
   let dropColor = PLAYER_COLORS[fallingDrop.playerIndex];
   
   if (fallingDrop.weight <= 0) {
-    dropColor = '#E57373';
+    dropColor = '#FF6B35';
   }
   
   drawWaterDrop(x, y, displayWeight, dropColor, fallingDrop.weight < 0);
   
   if (collectedThisTurn !== 0) {
     push();
-    fill(collectedThisTurn > 0 ? '#81C784' : '#E57373');
+    fill(collectedThisTurn > 0 ? '#81C784' : '#FF6B35');
     textAlign(CENTER, BOTTOM);
     textSize(20);
     let sign = collectedThisTurn > 0 ? '+' : '';
@@ -577,10 +585,12 @@ function calculateNextMove(row, col, dropWeight) {
   let downLeftWater = downLeftVal !== null ? downLeftVal : -Infinity;
   let downRightWater = downRightVal !== null ? downRightVal : -Infinity;
   
-  if (downLeftWater <= dropWeight && downRightWater <= dropWeight) {
+  // Lightweight exception: if both diagonals have EQUAL water AND that water > drop weight, go straight down
+  if (downLeftWater === downRightWater && downLeftWater > dropWeight && downRightWater > dropWeight) {
     if (down) {
       return down;
     }
+    // If can't go down, pick a diagonal
     let heaviest = candidates.reduce((a, b) => a.water >= b.water ? a : b);
     return heaviest;
   }
@@ -604,15 +614,25 @@ function calculateNextMove(row, col, dropWeight) {
 }
 
 function finishDrop() {
-  players[fallingDrop.playerIndex].score += collectedThisTurn;
+  // Add the final drop weight to score if it reached the bottom
+  let finalWeight = fallingDrop.weight;
+  if (finalWeight > 0) {
+    players[fallingDrop.playerIndex].score += finalWeight;
+  }
   
   let message;
-  if (collectedThisTurn > 0) {
-    message = players[fallingDrop.playerIndex].name + ' collected ' + collectedThisTurn + ' water!';
-  } else if (collectedThisTurn < 0) {
-    message = players[fallingDrop.playerIndex].name + ' lost ' + Math.abs(collectedThisTurn) + ' points to poison!';
+  if (collectedThisTurn > 0 && finalWeight > 0) {
+    message = players[fallingDrop.playerIndex].name + ' collected ' + collectedThisTurn + ' water and scored ' + finalWeight + ' points!';
+  } else if (collectedThisTurn > 0 && finalWeight <= 0) {
+    message = players[fallingDrop.playerIndex].name + ' collected ' + collectedThisTurn + ' but burned out in fire!';
+  } else if (collectedThisTurn < 0 && finalWeight > 0) {
+    message = players[fallingDrop.playerIndex].name + ' lost ' + Math.abs(collectedThisTurn) + ' to fire but scored ' + finalWeight + ' points!';
+  } else if (collectedThisTurn < 0 && finalWeight <= 0) {
+    message = players[fallingDrop.playerIndex].name + ' lost ' + Math.abs(collectedThisTurn) + ' to fire and burned out!';
+  } else if (finalWeight > 0) {
+    message = players[fallingDrop.playerIndex].name + ' reached the bottom and scored ' + finalWeight + ' points!';
   } else {
-    message = players[fallingDrop.playerIndex].name + ' collected nothing.';
+    message = players[fallingDrop.playerIndex].name + ' burned out completely!';
   }
   showMessage(message);
   
