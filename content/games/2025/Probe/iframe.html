@@ -51,9 +51,6 @@
             <option value="1000">1000 × 1000</option>
           </select>
         </label>
-        <label>Beatles peek every (seconds):
-          <input id="moveSubEvery" type="number" min="3" value="5" />
-        </label>
         <label>Radius increase every turns:
           <input id="radiusIncreaseEvery" type="number" min="1" value="50" />
         </label>
@@ -70,11 +67,12 @@
 
   <div id="instructionsModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="instrTitle">
     <div class="modal-panel">
-      <h2 id="instrTitle">How to play — Find The Beatles</h2>
+      <h2 id="instrTitle">How to play</h2>
       <div class="instr-body">
-        <p>It's 1967 and The Beatles have disappeared into a yellow submarine! Use your probe to search the grid and
-          find them.</p>
-        <p>Every 5 seconds, one of The Beatles will peek out briefly, giving you a clue to their location. Your probe
+        <p>The year is 1967 and The Beatles have gone missing! Through meticulous research, we have uncovered that
+          they're hiding in a yellow submarine somewhere in the vast ocean. Your mission is to navigate your probe
+          through the waters to locate the elusive submarine.</p>
+        <p>Every few seconds, one of The Beatles will peek out briefly, giving you a clue to their location. Your probe
           scans in a circular radius — if the submarine is detected, you'll get a compass direction hint (N, NE, E,
           ...).</p>
         <p>Use arrow keys (Player 1) or WASD (Player 2) to move. Adjust the scan radius with the slider to narrow your
@@ -98,12 +96,6 @@
             <input id="instr_radiusIncreaseEvery" type="number" min="1" value="50" />
             <div class="instr-help">How many turns before the probe's automatic scan radius increases by 1. Higher slows
               automatic expansion.</div>
-          </div>
-
-          <div class="instr-row">
-            <label>Beatles peek interval (seconds)</label>
-            <input id="instr_moveSubEvery" type="number" min="3" value="5" />
-            <div class="instr-help">How often (in seconds) The Beatles move and peek out. Minimum 3 seconds.</div>
           </div>
 
           <div class="instr-row">

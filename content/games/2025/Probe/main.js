@@ -13,9 +13,9 @@ let autoRadiusBase = 5;
 let radiusIncreaseEvery = 50;
 let keysPressed = {};
 let lastMoveTime = { 1: 0, 2: 0 };
-let moveDelay = 50; // Milliseconds between moves (faster)
+let moveDelay = 50; // Milliseconds between moves
 let manualRadius = 0;
-let moveSubEvery = 5; // Now in seconds
+let moveSubEvery = 5;
 let winDistance = 2;
 let timerStart = 0;
 let timerId = null;
@@ -87,9 +87,9 @@ function startSubMovementTimer() {
   function scheduleNextMove() {
     if (!started) return;
 
-    // First 10 moves: 3 seconds (hard phase)
-    // After 10 moves: 5 seconds (easier phase)
-    let interval = subMoveCount < 10 ? 3000 : 5000;
+    // First 5 moves: 3 seconds (hard phase)
+    // After 5 moves: 5 seconds (easier phase)
+    let interval = subMoveCount < 5 ? 3000 : 5000;
 
     subMoveTimerId = setTimeout(() => {
       moveSub();
@@ -370,8 +370,8 @@ function moveProbe(dir, player = 1) {
 function moveSub() {
   subMoveCount++;
 
-  // For the first 10 moves: hard phase - place submarine far from all probes
-  if (subMoveCount <= 10) {
+  // For the first 5 moves: hard phase - place submarine far from all probes
+  if (subMoveCount <= 5) {
     let bestPos = null;
     let maxMinDist = 0;
 
@@ -553,7 +553,6 @@ function resetTimerDisplay() {
 function newGame() {
   GRID_SIZE = parseInt(qs("gridSizeSelect").value, 10);
   radiusIncreaseEvery = parseInt(qs("radiusIncreaseEvery").value, 10);
-  moveSubEvery = parseInt(qs("moveSubEvery").value, 10);
   winDistance = parseInt(qs("winDistance").value, 10);
   placeRandomSub();
   probe.x = -1;
@@ -583,7 +582,6 @@ function showInstructions() {
   qs("instructionsModal").classList.remove("hidden");
   qs("instr_gridSize").value = qs("gridSizeSelect").value;
   qs("instr_radiusIncreaseEvery").value = qs("radiusIncreaseEvery").value;
-  qs("instr_moveSubEvery").value = qs("moveSubEvery").value;
   qs("instr_winDistance").value = qs("winDistance").value;
   qs("instr_numPlayers").value = numPlayers.toString();
 }
@@ -595,16 +593,13 @@ function hideInstructions() {
 function applyInstructionsAndStart() {
   let g = parseInt(qs("instr_gridSize").value, 10);
   let r = parseInt(qs("instr_radiusIncreaseEvery").value, 10);
-  let m = parseInt(qs("instr_moveSubEvery").value, 10);
   let w = parseInt(qs("instr_winDistance").value, 10);
   numPlayers = parseInt(qs("instr_numPlayers").value, 10);
   qs("gridSizeSelect").value = g;
   qs("radiusIncreaseEvery").value = r;
-  qs("moveSubEvery").value = m;
   qs("winDistance").value = w;
   GRID_SIZE = g;
   radiusIncreaseEvery = r;
-  moveSubEvery = m;
   winDistance = w;
   hideInstructions();
   placeRandomSub();
@@ -799,9 +794,6 @@ function init() {
   qs("instrStartBtn").addEventListener("click", applyInstructionsAndStart);
   qs("instrCancelBtn").addEventListener("click", hideInstructions);
   qs("gridSizeSelect").addEventListener("change", newGame);
-  qs("moveSubEvery").addEventListener("change", function () {
-    moveSubEvery = parseInt(this.value, 10);
-  });
   qs("radiusIncreaseEvery").addEventListener("change", function () {
     radiusIncreaseEvery = parseInt(this.value, 10);
   });
